@@ -1,3 +1,5 @@
+![Shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite](.wordpress-org/banner-1544x500.png)
+
 # Shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite
 
 An individual robots.txt for every site of a domain-based WordPress multisite network – edited in the network admin or deployed as a file.
@@ -47,6 +49,11 @@ The same page lists all sites with the source of their robots.txt, the override 
 ## Installation
 
 Copy the folder `shawesome-virtual-robots-txt/` to `wp-content/plugins/` (or upload it as a ZIP) and network-activate the plugin. See [`readme.txt`](shawesome-virtual-robots-txt/readme.txt) for FAQ and changelog.
+
+## Repository layout
+
+- `shawesome-virtual-robots-txt/` – the plugin
+- `.wordpress-org/` – plugin directory assets (banners, icons)
 
 ## License
 
