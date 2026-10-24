@@ -3,7 +3,7 @@
  * Plugin Name:         Shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite
  * Plugin URI:          https://github.com/shawesome-code/shawesome-virtual-robots.txt
  * Description:         Serves an individual robots.txt for every site of a subdomain/domain-based multisite network from /wp-content/virtual-robots-txt/. The file name is derived from the domain (dots become hyphens), e.g. www.example.com → www-example-com.txt.
- * Version:             1.1.0
+ * Version:             1.2.0
  * Requires at least:   5.1
  * Requires PHP:        7.4
  * Author:              Shawesome
@@ -21,70 +21,226 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+define( 'SHAWESOME_VRT_VERSION', '1.2.0' );
+define( 'SHAWESOME_VRT_OPTION', 'shawesome_vrt_settings' );
+
 /**
  * Directory holding the per-site robots.txt files.
+ *
+ * Can be changed with the constant SHAWESOME_VRT_DIR (e.g. in wp-config.php)
+ * or the filter 'shawesome_vrt_dir'.
  *
  * @return string Absolute path with trailing slash.
  */
 function shawesome_vrt_dir() {
-	return WP_CONTENT_DIR . '/virtual-robots-txt/';
+	$dir = defined( 'SHAWESOME_VRT_DIR' ) ? SHAWESOME_VRT_DIR : WP_CONTENT_DIR . '/virtual-robots-txt/';
+
+	return trailingslashit( apply_filters( 'shawesome_vrt_dir', $dir ) );
+}
+
+/**
+ * Whether the plugin can work on this installation: only multisite networks
+ * based on domains/subdomains (not on paths/subdirectories).
+ *
+ * @return bool
+ */
+function shawesome_vrt_is_supported() {
+	return is_multisite() && is_subdomain_install();
+}
+
+/**
+ * Network-wide settings, merged with the defaults.
+ *
+ * - mode 'exact': the file is delivered as is, after all SEO plugins
+ *   (Yoast SEO, All in One SEO …) have run.
+ * - mode 'base': the file replaces the WordPress default, SEO plugins may
+ *   still add their rules and sitemaps.
+ * - respect_public: sites set to "Discourage search engines" keep
+ *   WordPress' "Disallow: /" instead of the file.
+ *
+ * @return array{mode: string, respect_public: bool}
+ */
+function shawesome_vrt_get_settings() {
+	$defaults = array(
+		'mode'           => 'exact',
+		'respect_public' => true,
+	);
+
+	$settings = wp_parse_args( (array) get_site_option( SHAWESOME_VRT_OPTION, array() ), $defaults );
+
+	if ( ! in_array( $settings['mode'], array( 'exact', 'base' ), true ) ) {
+		$settings['mode'] = $defaults['mode'];
+	}
+	$settings['respect_public'] = (bool) $settings['respect_public'];
+
+	return $settings;
+}
+
+/**
+ * Candidate file names for a domain, in order of precedence.
+ *
+ * The hyphenated name (www-example-com.txt) comes first for backwards
+ * compatibility. The name with dots (www.example.com.txt) is unambiguous,
+ * because a-b.example and a.b.example both map to a-b-example.txt.
+ *
+ * @param string $domain Site domain.
+ * @return string[] Absolute file paths.
+ */
+function shawesome_vrt_candidate_files( $domain ) {
+	$dir    = shawesome_vrt_dir();
+	$domain = strtolower( $domain );
+
+	$files = array(
+		$dir . str_replace( '.', '-', $domain ) . '.txt',
+		$dir . $domain . '.txt',
+	);
+
+	return (array) apply_filters( 'shawesome_vrt_candidate_files', $files, $domain );
+}
+
+/**
+ * First readable robots.txt file for a domain.
+ *
+ * @param string $domain Site domain.
+ * @return string|null Absolute file path or null.
+ */
+function shawesome_vrt_find_file( $domain ) {
+	foreach ( shawesome_vrt_candidate_files( $domain ) as $file ) {
+		if ( is_readable( $file ) ) {
+			return $file;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Read a robots.txt file: strip a UTF-8 BOM (it would break the first
+ * directive for crawlers) and normalize line endings to "\n".
+ *
+ * @param string $file Absolute file path.
+ * @return string|null File contents or null on failure.
+ */
+function shawesome_vrt_read_file( $file ) {
+	$content = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+
+	if ( false === $content ) {
+		return null;
+	}
+
+	if ( 0 === strpos( $content, "\xEF\xBB\xBF" ) ) {
+		$content = substr( $content, 3 );
+	}
+
+	return str_replace( array( "\r\n", "\r" ), "\n", $content );
+}
+
+/**
+ * Remove repeated Sitemap lines (case-insensitive), keeping the first one.
+ * Used in 'base' mode, when the file and an SEO plugin both add the sitemap.
+ *
+ * @param string $output robots.txt output.
+ * @return string
+ */
+function shawesome_vrt_dedupe_sitemaps( $output ) {
+	$seen  = array();
+	$lines = array();
+
+	foreach ( preg_split( '/\r\n|\r|\n/', $output ) as $line ) {
+		if ( preg_match( '/^\s*sitemap\s*:\s*(\S+)/i', $line, $match ) ) {
+			$url = strtolower( untrailingslashit( $match[1] ) );
+			if ( isset( $seen[ $url ] ) ) {
+				continue;
+			}
+			$seen[ $url ] = true;
+		}
+		$lines[] = $line;
+	}
+
+	return implode( "\n", $lines );
 }
 
 /**
  * On activation, create the directory for the virtual robots.txt files
  * if it does not exist yet.
  */
-register_activation_hook(
-	__FILE__,
-	function () {
-		$robots_dir = shawesome_vrt_dir();
+function shawesome_vrt_activate() {
+	$robots_dir = shawesome_vrt_dir();
 
-		if ( ! file_exists( $robots_dir ) ) {
-			wp_mkdir_p( $robots_dir );
-		}
+	if ( ! file_exists( $robots_dir ) ) {
+		wp_mkdir_p( $robots_dir );
 	}
-);
+}
+register_activation_hook( __FILE__, 'shawesome_vrt_activate' );
 
-add_filter(
-	'robots_txt',
-	function ( $output, $public ) {
-
-		// 1. Only act on multisite installations based on domains/subdomains
-		//    (not on paths/subdirectories).
-		if ( ! is_multisite() ) {
-			return $output;
-		}
-
-		if ( ! defined( 'SUBDOMAIN_INSTALL' ) || ! SUBDOMAIN_INSTALL ) {
-			// Path-based multisite -> do nothing.
-			return $output;
-		}
-
-		$current_host = isset( $_SERVER['HTTP_HOST'] ) ? strtolower( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
-		if ( '' === $current_host ) {
-			return $output;
-		}
-
-		// 2. Only consider the current site, and only if it matches the requested host.
-		$site = get_site();
-		if ( ! $site || strtolower( $site->domain ) !== $current_host ) {
-			return $output;
-		}
-
-		// 2.1 Derive the file name from the domain (dots -> hyphens).
-		$filepath = shawesome_vrt_dir() . str_replace( '.', '-', $site->domain ) . '.txt';
-
-		// 2.2 If the file exists, return its contents.
-		if ( is_readable( $filepath ) ) {
-			$content = file_get_contents( $filepath );
-			if ( false !== $content ) {
-				return $content;
-			}
-		}
-
-		// No match -> keep WordPress' default behavior.
+/**
+ * Filter callback for 'robots_txt': replace the output with the site's file.
+ *
+ * @param string $output robots.txt output so far.
+ * @param string $public Value of the blog_public option ('0' = discourage search engines).
+ * @return string
+ */
+function shawesome_vrt_filter_robots_txt( $output, $public ) {
+	if ( ! shawesome_vrt_is_supported() ) {
 		return $output;
-	},
-	10,
-	2
-);
+	}
+
+	$settings = shawesome_vrt_get_settings();
+
+	// Keep WordPress' "Disallow: /" for sites hidden from search engines,
+	// so that e.g. a staging site does not become indexable by accident.
+	if ( $settings['respect_public'] && '0' === (string) $public ) {
+		return $output;
+	}
+
+	// WordPress has already resolved the current site from the requested host.
+	$site = get_site();
+	if ( ! $site ) {
+		return $output;
+	}
+
+	$file = shawesome_vrt_find_file( $site->domain );
+	if ( null === $file ) {
+		// No match -> keep the default behavior.
+		return $output;
+	}
+
+	$content = shawesome_vrt_read_file( $file );
+
+	return null === $content ? $output : $content;
+}
+
+/**
+ * Filter callback for 'robots_txt' in 'base' mode, after all SEO plugins.
+ *
+ * @param string $output robots.txt output.
+ * @return string
+ */
+function shawesome_vrt_filter_dedupe( $output ) {
+	return shawesome_vrt_dedupe_sitemaps( $output );
+}
+
+/**
+ * Register the robots.txt filters according to the selected mode.
+ *
+ * 'exact' runs at PHP_INT_MAX, after Yoast SEO (99999) and All in One SEO
+ * (10000), which would otherwise append to or rebuild the file. 'base' runs
+ * at 10, before them. The priority can be changed with the filter
+ * 'shawesome_vrt_priority'.
+ */
+function shawesome_vrt_register_filters() {
+	$settings = shawesome_vrt_get_settings();
+	$priority = 'exact' === $settings['mode'] ? PHP_INT_MAX : 10;
+	$priority = (int) apply_filters( 'shawesome_vrt_priority', $priority, $settings['mode'] );
+
+	add_filter( 'robots_txt', 'shawesome_vrt_filter_robots_txt', $priority, 2 );
+
+	if ( 'base' === $settings['mode'] ) {
+		add_filter( 'robots_txt', 'shawesome_vrt_filter_dedupe', PHP_INT_MAX );
+	}
+}
+add_action( 'plugins_loaded', 'shawesome_vrt_register_filters' );
+
+if ( is_admin() ) {
+	require_once __DIR__ . '/includes/admin.php';
+}
