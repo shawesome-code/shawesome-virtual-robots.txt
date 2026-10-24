@@ -2,8 +2,8 @@
 /**
  * Plugin Name:         Shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite
  * Plugin URI:          https://github.com/shawesome-code/shawesome-virtual-robots.txt
- * Description:         Serves an individual robots.txt for every site of a subdomain/domain-based multisite network from /wp-content/virtual-robots-txt/. The file name is derived from the domain (dots become hyphens), e.g. www.example.com → www-example-com.txt.
- * Version:             1.2.0
+ * Description:         An individual robots.txt for every site of a subdomain/domain-based multisite network – edited in the network admin, or deployed as a file to /wp-content/virtual-robots-txt/ (e.g. www.example.com → www-example-com.txt), which takes precedence.
+ * Version:             1.3.0
  * Requires at least:   5.1
  * Requires PHP:        7.4
  * Author:              Shawesome
@@ -21,8 +21,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SHAWESOME_VRT_VERSION', '1.2.0' );
+define( 'SHAWESOME_VRT_VERSION', '1.3.0' );
 define( 'SHAWESOME_VRT_OPTION', 'shawesome_vrt_settings' );
+define( 'SHAWESOME_VRT_CONTENT_OPTION', 'shawesome_vrt_content' );
 
 /**
  * Directory holding the per-site robots.txt files.
@@ -115,24 +116,97 @@ function shawesome_vrt_find_file( $domain ) {
 }
 
 /**
- * Read a robots.txt file: strip a UTF-8 BOM (it would break the first
+ * Normalize robots.txt content: strip a UTF-8 BOM (it would break the first
  * directive for crawlers) and normalize line endings to "\n".
  *
- * @param string $file Absolute file path.
- * @return string|null File contents or null on failure.
+ * @param string $content Raw content.
+ * @return string
  */
-function shawesome_vrt_read_file( $file ) {
-	$content = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-
-	if ( false === $content ) {
-		return null;
-	}
-
+function shawesome_vrt_normalize( $content ) {
 	if ( 0 === strpos( $content, "\xEF\xBB\xBF" ) ) {
 		$content = substr( $content, 3 );
 	}
 
 	return str_replace( array( "\r\n", "\r" ), "\n", $content );
+}
+
+/**
+ * Read a robots.txt file.
+ *
+ * @param string $file Absolute file path.
+ * @return string|null Normalized file contents or null on failure.
+ */
+function shawesome_vrt_read_file( $file ) {
+	$content = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+
+	return false === $content ? null : shawesome_vrt_normalize( $content );
+}
+
+/**
+ * robots.txt content stored in the database for a site.
+ *
+ * @param int $site_id Site ID.
+ * @return string Content, empty if none.
+ */
+function shawesome_vrt_get_db_content( $site_id ) {
+	return (string) get_blog_option( $site_id, SHAWESOME_VRT_CONTENT_OPTION, '' );
+}
+
+/**
+ * Store robots.txt content in the database for a site. Empty content
+ * deletes the option, so the site falls back to the WordPress default.
+ *
+ * @param int    $site_id Site ID.
+ * @param string $content Content.
+ */
+function shawesome_vrt_set_db_content( $site_id, $content ) {
+	$content = shawesome_vrt_normalize( (string) $content );
+
+	switch_to_blog( $site_id );
+	if ( '' === trim( $content ) ) {
+		delete_option( SHAWESOME_VRT_CONTENT_OPTION );
+	} else {
+		// Not autoloaded: only needed when robots.txt is requested.
+		update_option( SHAWESOME_VRT_CONTENT_OPTION, $content, false );
+	}
+	restore_current_blog();
+}
+
+/**
+ * Where the robots.txt of a site comes from. A file takes precedence over
+ * the database, so that deployments keep control.
+ *
+ * @param WP_Site $site Site.
+ * @return array{source: string|null, file: string|null, content: string|null}
+ *               source is 'file', 'db' or null (WordPress default).
+ */
+function shawesome_vrt_resolve( $site ) {
+	$file = shawesome_vrt_find_file( $site->domain );
+	if ( null !== $file ) {
+		$content = shawesome_vrt_read_file( $file );
+		if ( null !== $content ) {
+			return array(
+				'source'  => 'file',
+				'file'    => $file,
+				'content' => $content,
+			);
+		}
+	}
+
+	$content = shawesome_vrt_get_db_content( (int) $site->blog_id );
+	if ( '' !== trim( $content ) ) {
+		return array(
+			'source'  => 'db',
+			'file'    => null,
+			'content' => $content,
+		);
+	}
+
+	return array(
+		'source'  => null,
+		'file'    => null,
+		'content' => null,
+	);
 }
 
 /**
@@ -161,20 +235,8 @@ function shawesome_vrt_dedupe_sitemaps( $output ) {
 }
 
 /**
- * On activation, create the directory for the virtual robots.txt files
- * if it does not exist yet.
- */
-function shawesome_vrt_activate() {
-	$robots_dir = shawesome_vrt_dir();
-
-	if ( ! file_exists( $robots_dir ) ) {
-		wp_mkdir_p( $robots_dir );
-	}
-}
-register_activation_hook( __FILE__, 'shawesome_vrt_activate' );
-
-/**
- * Filter callback for 'robots_txt': replace the output with the site's file.
+ * Filter callback for 'robots_txt': replace the output with the site's
+ * file or database content.
  *
  * @param string $output robots.txt output so far.
  * @param string $public Value of the blog_public option ('0' = discourage search engines).
@@ -199,15 +261,10 @@ function shawesome_vrt_filter_robots_txt( $output, $public ) {
 		return $output;
 	}
 
-	$file = shawesome_vrt_find_file( $site->domain );
-	if ( null === $file ) {
-		// No match -> keep the default behavior.
-		return $output;
-	}
+	$resolved = shawesome_vrt_resolve( $site );
 
-	$content = shawesome_vrt_read_file( $file );
-
-	return null === $content ? $output : $content;
+	// No file and no database content -> keep the default behavior.
+	return null === $resolved['content'] ? $output : $resolved['content'];
 }
 
 /**

@@ -4,38 +4,46 @@ Tags: robots.txt, multisite, seo, network, crawler
 Requires at least: 5.1
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Network: true
 
-An individual robots.txt for every site of a domain-based multisite network – maintained as plain text files.
+An individual robots.txt for every site of a domain-based multisite network – edited in the network admin or deployed as a file.
 
 == Description ==
 
 WordPress generates one virtual robots.txt for every site. In a multisite network you often need different rules per domain – e.g. to block a staging domain or to point each site to its own sitemap.
 
-Shawesome Virtual Robots.txt serves the contents of a plain text file from `/wp-content/virtual-robots-txt/` for each site, if a matching file exists. The file name is derived from the site's domain, with dots replaced by hyphens:
+Shawesome Virtual Robots.txt lets you maintain a separate robots.txt for every site of the network:
+
+**Edit in the network admin**
+
+Under *Network Admin → Settings → Virtual Robots.txt* every site has its own editor. The content is stored in the site's database options – it survives domain changes and is removed together with the site. Leave it empty to keep WordPress' default robots.txt.
+
+**Or deploy a file**
+
+A plain text file in `/wp-content/virtual-robots-txt/` overrides the database content, e.g. for Git-based deployments. The file name is derived from the site's domain, with dots replaced by hyphens:
 
 * `www.example.com` → `www-example-com.txt`
 * `shop.example.com` → `shop-example-com.txt`
 
-Sites without a file keep WordPress' default robots.txt (including output from other plugins). As an unambiguous alternative, the domain with dots is accepted as well (`www.example.com.txt`); the hyphenated name takes precedence.
+As an unambiguous alternative, the domain with dots is accepted as well (`www.example.com.txt`); the hyphenated name takes precedence. While a file exists, the editor shows its content read-only and offers to copy it into the database.
 
 **Works with Yoast SEO and All in One SEO**
 
-Neither Yoast SEO nor All in One SEO can serve a separate robots.txt file per domain in a multisite network the way this plugin does. Both change the robots.txt output, though. Under *Network Admin → Settings → Virtual Robots.txt* you choose how the file is combined with them:
+Neither Yoast SEO nor All in One SEO can serve a separate robots.txt per domain in a multisite network the way this plugin does. Both change the robots.txt output, though. In the settings you choose how your content is combined with them:
 
-* **Exact** (default) – the file is delivered as is, after all SEO plugins have run.
-* **Base** – the file replaces the WordPress default; Yoast SEO appends its sitemap, All in One SEO rebuilds the rules (comments and Sitemap lines from the file are dropped). Duplicate Sitemap lines are removed.
+* **Exact** (default) – the content is delivered as is, after all SEO plugins have run.
+* **Base** – the content replaces the WordPress default; Yoast SEO appends its sitemap, All in One SEO rebuilds the rules (comments and Sitemap lines are dropped). Duplicate Sitemap lines are removed.
 
 **Network overview**
 
-The settings page lists all sites with their expected file name, whether a file is active, which SEO plugins run on the site and a link to the live robots.txt. It warns about a physical `robots.txt` in the web root, a missing directory and SEO plugins that would change the file.
+The settings page lists all sites with the source of their robots.txt (database, file or WordPress default), the override file name, the SEO plugins running on the site and a link to the live robots.txt. It warns about a physical `robots.txt` in the web root and about SEO plugins that would change the content.
 
 **Search engine visibility**
 
-Sites set to "Discourage search engines from indexing this site" keep WordPress' `Disallow: /` instead of the file, so a staging site does not become indexable by accident. This can be switched off.
+Sites set to "Discourage search engines from indexing this site" keep WordPress' `Disallow: /` instead of the custom robots.txt, so a staging site does not become indexable by accident – even if the database was copied from production. This can be switched off.
 
 **Notes**
 
@@ -45,33 +53,49 @@ Sites set to "Discourage search engines from indexing this site" keep WordPress'
 
 **For developers**
 
-* Constant `SHAWESOME_VRT_DIR` or filter `shawesome_vrt_dir` – change the directory.
+* Constant `SHAWESOME_VRT_DIR` or filter `shawesome_vrt_dir` – change the directory for override files.
 * Filter `shawesome_vrt_candidate_files` – change the candidate file paths for a domain.
 * Filter `shawesome_vrt_priority` – change the priority of the `robots_txt` filter.
+* Content is stored in the site option `shawesome_vrt_content` (not autoloaded).
 * All callbacks are named functions and can be removed with `remove_filter()`.
 
 == Installation ==
 
 1. Upload the folder `shawesome-virtual-robots-txt` to `/wp-content/plugins/` (or upload the ZIP via *Network Admin → Plugins → Add New*).
-2. Network-activate the plugin. The directory `/wp-content/virtual-robots-txt/` is created automatically.
-3. Place one text file per domain in that directory, e.g. `www-example-com.txt`.
-4. Check the result under *Network Admin → Settings → Virtual Robots.txt* or open `https://www.example.com/robots.txt`.
+2. Network-activate the plugin.
+3. Edit the robots.txt of each site under *Network Admin → Settings → Virtual Robots.txt* – or place one text file per domain in `/wp-content/virtual-robots-txt/`, e.g. `www-example-com.txt`.
+4. Check the result with the "Open" link or at `https://www.example.com/robots.txt`.
 
 == Frequently Asked Questions ==
 
-= My file is not delivered. =
+= My robots.txt is not delivered. =
 
-The settings page under *Network Admin → Settings → Virtual Robots.txt* shows the expected file name and status for every site. Also check that there is no physical `robots.txt` in the web root, that the file is readable by the web server and that the site is not set to "Discourage search engines".
+The overview under *Network Admin → Settings → Virtual Robots.txt* shows the source for every site. Also check that there is no physical `robots.txt` in the web root and that the site is not set to "Discourage search engines". For files, check that they are readable by the web server.
 
-= Yoast SEO or All in One SEO changes my file. =
+= I changed the content in the editor, but the old one is still delivered. =
 
-Select the mode "Exact" in the settings. The file is then delivered after all SEO plugins have run.
+A file in `/wp-content/virtual-robots-txt/` overrides the database content. Delete the file – or copy it into the database first with the button in the editor.
+
+= Yoast SEO or All in One SEO changes my robots.txt. =
+
+Select the mode "Exact" in the settings. The content is then delivered after all SEO plugins have run.
 
 = Does it work for path-based networks (example.com/site-a/)? =
 
-No. robots.txt is always served from the root of a host, so per-site files only make sense for networks with their own (sub)domains.
+No. robots.txt is always served from the root of a host, so per-site robots.txt only makes sense for networks with their own (sub)domains.
+
+= What happens on uninstall? =
+
+The settings and the content stored in the database are deleted. Files in `/wp-content/virtual-robots-txt/` are kept.
 
 == Changelog ==
+
+= 1.3.0 =
+* New: editor per site in the network admin; content is stored in the database.
+* Files in /wp-content/virtual-robots-txt/ are now optional and override the database content.
+* New: copy a site's file into the database with one click.
+* The directory is no longer created on activation.
+* Uninstall also removes the content stored in the database (files are kept).
 
 = 1.2.0 =
 * New: settings page in the network admin with an overview of all sites, file status, detected SEO plugins and warnings (physical robots.txt, missing directory).
