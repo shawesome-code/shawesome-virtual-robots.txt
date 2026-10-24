@@ -1,0 +1,22 @@
+# Betriebssystem
+.DS_Store
+Thumbs.db
+
+# Editoren/IDEs
+.vscode/
+.idea/
+
+# Abhängigkeiten (falls später Composer/NPM dazukommt)
+node_modules/
+vendor/
+
+# Lokale WordPress-Testumgebung
+/wordpress/
+/wp-content/
+*.sql
+
+# Logs
+*.log
+
+# Build-Artefakte (Plugin-ZIPs zum Upload)
+*.zip
