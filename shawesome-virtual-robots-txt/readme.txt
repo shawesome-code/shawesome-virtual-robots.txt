@@ -2,7 +2,7 @@
 Contributors: shawesome
 Tags: robots.txt, multisite, seo, network, crawler
 Requires at least: 5.1
-Tested up to: 6.6
+Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 1.4.0
 License: GPLv2 or later
@@ -32,7 +32,7 @@ As an unambiguous alternative, the domain with dots is accepted as well (`www.ex
 
 **Works with Yoast SEO and All in One SEO**
 
-Neither Yoast SEO nor All in One SEO can serve a separate robots.txt per domain in a multisite network the way this plugin does. Both change the robots.txt output, though. In the settings you choose how your content is combined with them:
+Yoast SEO and All in One SEO change the robots.txt output. In the settings you choose how your content is combined with them:
 
 * **Base** (default) – the content replaces the WordPress default; Yoast SEO appends its sitemap, All in One SEO rebuilds the rules (comments and Sitemap lines are dropped). Duplicate Sitemap lines are removed.
 * **Exact** – the content is delivered as is, after all SEO plugins have run.
