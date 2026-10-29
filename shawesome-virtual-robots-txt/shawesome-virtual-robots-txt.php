@@ -4,7 +4,7 @@
  * Plugin URI:          https://github.com/shawesome-code/shawesome-virtual-robots.txt
  * Description:         An individual robots.txt for every site of a subdomain/domain-based multisite network – edited in the network admin, or deployed as a file to /wp-content/virtual-robots-txt/ (e.g. www.example.com → www-example-com.txt), which takes precedence.
  * Version:             1.4.0
- * Requires at least:   5.1
+ * Requires at least:   7.1
  * Requires PHP:        7.4
  * Author:              Shawesome
  * Author URI:          https://shawesome.de/

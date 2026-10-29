@@ -43,7 +43,7 @@ The same page lists all sites with the source of their robots.txt, the override 
 
 ## Requirements
 
-- WordPress 5.1+ (multisite)
+- WordPress 7.1+ (multisite)
 - PHP 7.4+
 
 The admin interface is available in English, German, Spanish and French.

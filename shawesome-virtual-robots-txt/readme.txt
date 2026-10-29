@@ -1,7 +1,7 @@
 === Shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite ===
 Contributors: shawesome
 Tags: robots.txt, multisite, seo, network, crawler
-Requires at least: 5.1
+Requires at least: 7.1
 Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 1.4.0
@@ -97,6 +97,7 @@ The settings and the content stored in the database are deleted. Files in `/wp-c
 = 1.4.0 =
 * "Base" is now the default mode. Networks that already saved their settings keep their mode.
 * New: translations for German (de_DE, de_DE_formal), Spanish (es_ES) and French (fr_FR).
+* Requires WordPress 7.1 or later.
 
 = 1.3.0 =
 * New: editor per site in the network admin; content is stored in the database.
