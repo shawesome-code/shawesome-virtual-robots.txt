@@ -12,6 +12,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Load the bundled translations. Translations from translate.wordpress.org
+ * in wp-content/languages/plugins/ take precedence.
+ */
+function shawesome_vrt_load_textdomain() {
+	load_plugin_textdomain( 'shawesome-virtual-robots-txt', false, dirname( plugin_basename( dirname( __DIR__ ) . '/shawesome-virtual-robots-txt.php' ) ) . '/languages' );
+}
+add_action( 'init', 'shawesome_vrt_load_textdomain' );
+
+/**
  * SEO plugins that change the robots.txt output, keyed by plugin file.
  *
  * @return array<string, string> Plugin file => name.
@@ -115,12 +124,12 @@ function shawesome_vrt_save_settings() {
 	check_admin_referer( 'shawesome_vrt_save' );
 	shawesome_vrt_check_cap();
 
-	$mode = isset( $_POST['mode'] ) ? sanitize_key( wp_unslash( $_POST['mode'] ) ) : 'exact';
+	$mode = isset( $_POST['mode'] ) ? sanitize_key( wp_unslash( $_POST['mode'] ) ) : 'base';
 
 	update_site_option(
 		SHAWESOME_VRT_OPTION,
 		array(
-			'mode'           => in_array( $mode, array( 'exact', 'base' ), true ) ? $mode : 'exact',
+			'mode'           => in_array( $mode, array( 'exact', 'base' ), true ) ? $mode : 'base',
 			'respect_public' => ! empty( $_POST['respect_public'] ),
 		)
 	);
@@ -337,14 +346,14 @@ function shawesome_vrt_render_overview( $updated ) {
 					<td>
 						<fieldset>
 							<label>
-								<input type="radio" name="mode" value="exact" <?php checked( $settings['mode'], 'exact' ); ?>>
-								<strong><?php esc_html_e( 'Exact', 'shawesome-virtual-robots-txt' ); ?></strong> –
-								<?php esc_html_e( 'the content is delivered as is. SEO plugins (Yoast SEO, All in One SEO …) cannot change it.', 'shawesome-virtual-robots-txt' ); ?>
-							</label><br>
-							<label>
 								<input type="radio" name="mode" value="base" <?php checked( $settings['mode'], 'base' ); ?>>
 								<strong><?php esc_html_e( 'Base', 'shawesome-virtual-robots-txt' ); ?></strong> –
 								<?php esc_html_e( 'the content replaces the WordPress default. SEO plugins may add their rules and sitemap; duplicate Sitemap lines are removed.', 'shawesome-virtual-robots-txt' ); ?>
+							</label><br>
+							<label>
+								<input type="radio" name="mode" value="exact" <?php checked( $settings['mode'], 'exact' ); ?>>
+								<strong><?php esc_html_e( 'Exact', 'shawesome-virtual-robots-txt' ); ?></strong> –
+								<?php esc_html_e( 'the content is delivered as is. SEO plugins (Yoast SEO, All in One SEO …) cannot change it.', 'shawesome-virtual-robots-txt' ); ?>
 							</label>
 						</fieldset>
 					</td>

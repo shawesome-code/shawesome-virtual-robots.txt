@@ -3,7 +3,7 @@
  * Plugin Name:         Shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite
  * Plugin URI:          https://github.com/shawesome-code/shawesome-virtual-robots.txt
  * Description:         An individual robots.txt for every site of a subdomain/domain-based multisite network – edited in the network admin, or deployed as a file to /wp-content/virtual-robots-txt/ (e.g. www.example.com → www-example-com.txt), which takes precedence.
- * Version:             1.3.0
+ * Version:             1.4.0
  * Requires at least:   5.1
  * Requires PHP:        7.4
  * Author:              Shawesome
@@ -11,6 +11,7 @@
  * License:             GPL-2.0-or-later
  * License URI:         https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:         shawesome-virtual-robots-txt
+ * Domain Path:         /languages
  * Network:             true
  *
  * @package Shawesome_Virtual_Robots_Txt
@@ -21,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SHAWESOME_VRT_VERSION', '1.3.0' );
+define( 'SHAWESOME_VRT_VERSION', '1.4.0' );
 define( 'SHAWESOME_VRT_OPTION', 'shawesome_vrt_settings' );
 define( 'SHAWESOME_VRT_CONTENT_OPTION', 'shawesome_vrt_content' );
 
@@ -52,10 +53,10 @@ function shawesome_vrt_is_supported() {
 /**
  * Network-wide settings, merged with the defaults.
  *
+ * - mode 'base' (default): the file replaces the WordPress default, SEO
+ *   plugins may still add their rules and sitemaps.
  * - mode 'exact': the file is delivered as is, after all SEO plugins
  *   (Yoast SEO, All in One SEO …) have run.
- * - mode 'base': the file replaces the WordPress default, SEO plugins may
- *   still add their rules and sitemaps.
  * - respect_public: sites set to "Discourage search engines" keep
  *   WordPress' "Disallow: /" instead of the file.
  *
@@ -63,7 +64,7 @@ function shawesome_vrt_is_supported() {
  */
 function shawesome_vrt_get_settings() {
 	$defaults = array(
-		'mode'           => 'exact',
+		'mode'           => 'base',
 		'respect_public' => true,
 	);
 

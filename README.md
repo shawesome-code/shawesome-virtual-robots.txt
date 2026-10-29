@@ -29,8 +29,8 @@ The domain with dots (`www.example.com.txt`) is accepted as an unambiguous alter
 
 Neither plugin can serve a separate robots.txt per domain in a multisite network the way this plugin does, but both change the robots.txt output: Yoast SEO appends its rules and sitemap, All in One SEO rebuilds the rules and drops comments and Sitemap lines. In the settings you choose the mode:
 
-- **Exact** (default) – the content is delivered as is, after all SEO plugins have run
-- **Base** – the content replaces the WordPress default, SEO plugins may add to it; duplicate Sitemap lines are removed
+- **Base** (default) – the content replaces the WordPress default, SEO plugins may add to it; duplicate Sitemap lines are removed
+- **Exact** – the content is delivered as is, after all SEO plugins have run
 
 The same page lists all sites with the source of their robots.txt, the override file name, detected SEO plugins and a link to the live robots.txt.
 
@@ -46,13 +46,15 @@ The same page lists all sites with the source of their robots.txt, the override 
 - WordPress 5.1+ (multisite)
 - PHP 7.4+
 
+The admin interface is available in English, German, Spanish and French.
+
 ## Installation
 
 Copy the folder `shawesome-virtual-robots-txt/` to `wp-content/plugins/` (or upload it as a ZIP) and network-activate the plugin. See [`readme.txt`](shawesome-virtual-robots-txt/readme.txt) for FAQ and changelog.
 
 ## Repository layout
 
-- `shawesome-virtual-robots-txt/` – the plugin
+- `shawesome-virtual-robots-txt/` – the plugin (translations in `languages/`)
 - `.wordpress-org/` – plugin directory assets (banners, icons)
 
 ## License

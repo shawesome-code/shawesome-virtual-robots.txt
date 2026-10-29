@@ -1,0 +1,145 @@
+# German (formal) translation of Shawesome Virtual Robots.txt.
+# Copyright (C) Shawesome
+# This file is distributed under the same license as the plugin (GPL-2.0-or-later).
+msgid ""
+msgstr ""
+"Project-Id-Version: Shawesome Virtual Robots.txt 1.4.0\n"
+"Report-Msgid-Bugs-To: https://github.com/shawesome-code/shawesome-virtual-robots.txt/issues\n"
+"Last-Translator: Shawesome <hello@shawesome.de>\n"
+"Language-Team: German\n"
+"Language: de_DE_formal\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: shawesome-virtual-robots-txt\n"
+
+#. Plugin Name of the plugin
+msgid "Shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite"
+msgstr "Shawesome Virtual Robots.txt – eigene robots.txt pro Website im Multisite-Netzwerk"
+
+#. Description of the plugin
+msgid "An individual robots.txt for every site of a subdomain/domain-based multisite network – edited in the network admin, or deployed as a file to /wp-content/virtual-robots-txt/ (e.g. www.example.com → www-example-com.txt), which takes precedence."
+msgstr "Eine eigene robots.txt für jede Website eines Subdomain-/Domain-basierten Multisite-Netzwerks – bearbeitet in der Netzwerkverwaltung oder als Datei in /wp-content/virtual-robots-txt/ bereitgestellt (z. B. www.example.com → www-example-com.txt), die dann Vorrang hat."
+
+msgid "Virtual Robots.txt"
+msgstr "Virtual Robots.txt"
+
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgid "Sorry, you are not allowed to manage options for this network."
+msgstr "Sie sind leider nicht berechtigt, die Einstellungen dieses Netzwerks zu verwalten."
+
+msgid "Site not found."
+msgstr "Website nicht gefunden."
+
+#. translators: %s: site domain
+msgid "robots.txt for %s"
+msgstr "robots.txt für %s"
+
+msgid "All sites"
+msgstr "Alle Websites"
+
+msgid "robots.txt saved."
+msgstr "robots.txt gespeichert."
+
+msgid "File copied into the database. Delete the file to make the database content active."
+msgstr "Datei in die Datenbank kopiert. Löschen Sie die Datei, damit der Inhalt aus der Datenbank verwendet wird."
+
+msgid "The file could not be read."
+msgstr "Die Datei konnte nicht gelesen werden."
+
+#. translators: %s: file path
+msgid "This site is overridden by the file %s. The file is delivered; the database content below is only used once the file is removed."
+msgstr "Diese Website wird durch die Datei %s überschrieben. Ausgeliefert wird die Datei; der Datenbank-Inhalt unten wird erst verwendet, wenn die Datei entfernt ist."
+
+msgid "File content (read-only)"
+msgstr "Datei-Inhalt (schreibgeschützt)"
+
+msgid "Copy file into database"
+msgstr "Datei in die Datenbank kopieren"
+
+msgid "Database content"
+msgstr "Datenbank-Inhalt"
+
+msgid "Leave empty to use the WordPress default (including output from SEO plugins)."
+msgstr "Leer lassen, um den WordPress-Standard zu verwenden (einschließlich der Ausgabe von SEO-Plugins)."
+
+msgid "Open live robots.txt"
+msgstr "Live-robots.txt öffnen"
+
+msgid "Settings saved."
+msgstr "Einstellungen gespeichert."
+
+msgid "This network uses subdirectories. Per-site robots.txt files only work for networks with their own (sub)domains, so the plugin does nothing here."
+msgstr "Dieses Netzwerk verwendet Unterverzeichnisse. Eigene robots.txt-Dateien pro Website funktionieren nur in Netzwerken mit eigenen (Sub-)Domains, daher ist das Plugin hier wirkungslos."
+
+#. translators: %s: path of the physical robots.txt file
+msgid "A physical robots.txt exists at %s. The web server delivers it directly, so WordPress and this plugin are never asked. Delete or rename it to use the virtual robots.txt."
+msgstr "Unter %s existiert eine physische robots.txt. Der Webserver liefert sie direkt aus, WordPress und dieses Plugin kommen also nie zum Zug. Löschen Sie sie oder benennen Sie sie um, um die virtuelle robots.txt zu verwenden."
+
+msgid "An SEO plugin is active on at least one site. In \"Base\" mode, Yoast SEO appends its rules and sitemap to the robots.txt, and All in One SEO rebuilds it: comments and Sitemap lines are dropped. Use \"Exact\" mode if the content should be delivered as is."
+msgstr "Auf mindestens einer Website ist ein SEO-Plugin aktiv. Im Modus „Basis“ hängt Yoast SEO seine Regeln und die Sitemap an die robots.txt an, und All in One SEO baut sie neu auf: Kommentare und Sitemap-Zeilen gehen verloren. Verwenden Sie den Modus „Exakt“, wenn der Inhalt unverändert ausgeliefert werden soll."
+
+msgid "Mode"
+msgstr "Modus"
+
+msgid "Base"
+msgstr "Basis"
+
+msgid "the content replaces the WordPress default. SEO plugins may add their rules and sitemap; duplicate Sitemap lines are removed."
+msgstr "der Inhalt ersetzt den WordPress-Standard. SEO-Plugins dürfen ihre Regeln und Sitemap ergänzen; doppelte Sitemap-Zeilen werden entfernt."
+
+msgid "Exact"
+msgstr "Exakt"
+
+msgid "the content is delivered as is. SEO plugins (Yoast SEO, All in One SEO …) cannot change it."
+msgstr "der Inhalt wird unverändert ausgeliefert. SEO-Plugins (Yoast SEO, All in One SEO …) können ihn nicht verändern."
+
+msgid "Search engine visibility"
+msgstr "Sichtbarkeit für Suchmaschinen"
+
+msgid "Ignore the custom robots.txt on sites set to \"Discourage search engines from indexing this site\" (WordPress keeps \"Disallow: /\")."
+msgstr "Eigene robots.txt auf Websites ignorieren, bei denen „Suchmaschinen davon abhalten, diese Website zu indexieren“ aktiviert ist (WordPress behält „Disallow: /“)."
+
+msgid "Sites"
+msgstr "Websites"
+
+#. translators: %s: directory path
+msgid "Edit the robots.txt of a site here. Optionally, a file in %s overrides the database content, e.g. for deployments. The hyphenated file name takes precedence; the name with dots is an unambiguous alternative."
+msgstr "Hier bearbeiten Sie die robots.txt einer Website. Optional überschreibt eine Datei in %s den Datenbank-Inhalt, z. B. für Deployments. Der Dateiname mit Bindestrichen hat Vorrang; der Name mit Punkten ist eine eindeutige Alternative."
+
+msgid "Site"
+msgstr "Website"
+
+msgid "Source"
+msgstr "Quelle"
+
+msgid "Override file name"
+msgstr "Name der Override-Datei"
+
+msgid "SEO plugins"
+msgstr "SEO-Plugins"
+
+msgid "robots.txt"
+msgstr "robots.txt"
+
+msgid "Edit"
+msgstr "Bearbeiten"
+
+msgid "WordPress default"
+msgstr "WordPress-Standard"
+
+msgid "Ignored – site hidden from search engines"
+msgstr "Ignoriert – Website für Suchmaschinen verborgen"
+
+#. translators: %s: file name
+msgid "File: %s"
+msgstr "Datei: %s"
+
+msgid "Database"
+msgstr "Datenbank"
+
+msgid "Open"
+msgstr "Öffnen"

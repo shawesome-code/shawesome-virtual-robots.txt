@@ -4,7 +4,7 @@ Tags: robots.txt, multisite, seo, network, crawler
 Requires at least: 5.1
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Network: true
@@ -34,8 +34,8 @@ As an unambiguous alternative, the domain with dots is accepted as well (`www.ex
 
 Neither Yoast SEO nor All in One SEO can serve a separate robots.txt per domain in a multisite network the way this plugin does. Both change the robots.txt output, though. In the settings you choose how your content is combined with them:
 
-* **Exact** (default) – the content is delivered as is, after all SEO plugins have run.
-* **Base** – the content replaces the WordPress default; Yoast SEO appends its sitemap, All in One SEO rebuilds the rules (comments and Sitemap lines are dropped). Duplicate Sitemap lines are removed.
+* **Base** (default) – the content replaces the WordPress default; Yoast SEO appends its sitemap, All in One SEO rebuilds the rules (comments and Sitemap lines are dropped). Duplicate Sitemap lines are removed.
+* **Exact** – the content is delivered as is, after all SEO plugins have run.
 
 **Network overview**
 
@@ -80,6 +80,10 @@ A file in `/wp-content/virtual-robots-txt/` overrides the database content. Dele
 
 Select the mode "Exact" in the settings. The content is then delivered after all SEO plugins have run.
 
+= Which languages are included? =
+
+English, German (informal and formal), Spanish and French.
+
 = Does it work for path-based networks (example.com/site-a/)? =
 
 No. robots.txt is always served from the root of a host, so per-site robots.txt only makes sense for networks with their own (sub)domains.
@@ -89,6 +93,10 @@ No. robots.txt is always served from the root of a host, so per-site robots.txt 
 The settings and the content stored in the database are deleted. Files in `/wp-content/virtual-robots-txt/` are kept.
 
 == Changelog ==
+
+= 1.4.0 =
+* "Base" is now the default mode. Networks that already saved their settings keep their mode.
+* New: translations for German (de_DE, de_DE_formal), Spanish (es_ES) and French (fr_FR).
 
 = 1.3.0 =
 * New: editor per site in the network admin; content is stored in the database.
