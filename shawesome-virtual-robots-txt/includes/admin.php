@@ -87,8 +87,8 @@ function shawesome_vrt_action_url( $action ) {
 function shawesome_vrt_admin_menu() {
 	add_submenu_page(
 		'shawesome',
-		__( 'Virtual Robots.txt', 'shawesome-virtual-robots-txt' ),
-		__( 'Virtual Robots.txt', 'shawesome-virtual-robots-txt' ),
+		__( 'Virtual robots.txt', 'shawesome-virtual-robots-txt' ),
+		__( 'Virtual robots.txt', 'shawesome-virtual-robots-txt' ),
 		'manage_network_options',
 		'shawesome-vrt',
 		'shawesome_vrt_render_page'
@@ -106,8 +106,8 @@ function shawesome_vrt_site_admin_menu() {
 
 	add_submenu_page(
 		'shawesome',
-		__( 'Virtual Robots.txt', 'shawesome-virtual-robots-txt' ),
-		__( 'Virtual Robots.txt', 'shawesome-virtual-robots-txt' ),
+		__( 'Virtual robots.txt', 'shawesome-virtual-robots-txt' ),
+		__( 'Virtual robots.txt', 'shawesome-virtual-robots-txt' ),
 		'manage_options',
 		'shawesome-vrt',
 		'shawesome_vrt_render_site_page'
@@ -419,7 +419,7 @@ function shawesome_vrt_render_overview( $updated ) {
 	$any_seo = (bool) array_filter( $seo_sites );
 	?>
 	<div class="wrap">
-		<h1><?php esc_html_e( 'Virtual Robots.txt', 'shawesome-virtual-robots-txt' ); ?></h1>
+		<h1><?php esc_html_e( 'Virtual robots.txt', 'shawesome-virtual-robots-txt' ); ?></h1>
 
 		<?php
 		if ( 'settings' === $updated ) {

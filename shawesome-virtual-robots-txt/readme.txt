@@ -1,4 +1,4 @@
-=== shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite ===
+=== shawesome Virtual robots.txt – Per-Site robots.txt for Multisite ===
 Contributors: shawesome
 Tags: robots.txt, multisite, seo, network, crawler
 Requires at least: 7.1
@@ -15,15 +15,15 @@ An individual robots.txt for every site of a domain-based multisite network – 
 
 WordPress generates one virtual robots.txt for every site. In a multisite network you often need different rules per domain – e.g. to block a staging domain or to point each site to its own sitemap.
 
-shawesome Virtual Robots.txt lets you maintain a separate robots.txt for every site of the network:
+shawesome Virtual robots.txt lets you maintain a separate robots.txt for every site of the network:
 
 **Edit in the network admin**
 
-Under *Network Admin → shawesome → Virtual Robots.txt* every site has its own editor. The content is stored in the site's database options – it survives domain changes and is removed together with the site. Leave it empty to keep WordPress' default robots.txt.
+Under *Network Admin → shawesome → Virtual robots.txt* every site has its own editor. The content is stored in the site's database options – it survives domain changes and is removed together with the site. Leave it empty to keep WordPress' default robots.txt.
 
 **Let site administrators edit**
 
-If enabled in the settings, site administrators can edit the robots.txt of their site under *shawesome → Virtual Robots.txt* in the site's admin. In the editor they have the same rights as super admins, so whoever saves last wins. They do not see other sites or the network settings. Off by default.
+If enabled in the settings, site administrators can edit the robots.txt of their site under *shawesome → Virtual robots.txt* in the site's admin. In the editor they have the same rights as super admins, so whoever saves last wins. They do not see other sites or the network settings. Off by default.
 
 **Or deploy a file**
 
@@ -72,14 +72,14 @@ All shawesome plugins share the *shawesome* menu. Its start page lists the activ
 
 1. Upload the folder `shawesome-virtual-robots-txt` to `/wp-content/plugins/` (or upload the ZIP via *Network Admin → Plugins → Add New*).
 2. Network-activate the plugin.
-3. Edit the robots.txt of each site under *Network Admin → shawesome → Virtual Robots.txt* – or place one text file per domain in `/wp-content/virtual-robots-txt/`, e.g. `www-example-com.txt`.
+3. Edit the robots.txt of each site under *Network Admin → shawesome → Virtual robots.txt* – or place one text file per domain in `/wp-content/virtual-robots-txt/`, e.g. `www-example-com.txt`.
 4. Check the result with the "Open" link or at `https://www.example.com/robots.txt`.
 
 == Frequently Asked Questions ==
 
 = My robots.txt is not delivered. =
 
-The overview under *Network Admin → shawesome → Virtual Robots.txt* shows the source for every site. Also check that there is no physical `robots.txt` in the web root and that the site is not set to "Discourage search engines". For files, check that they are readable by the web server.
+The overview under *Network Admin → shawesome → Virtual robots.txt* shows the source for every site. Also check that there is no physical `robots.txt` in the web root and that the site is not set to "Discourage search engines". For files, check that they are readable by the web server.
 
 = I changed the content in the editor, but the old one is still delivered. =
 

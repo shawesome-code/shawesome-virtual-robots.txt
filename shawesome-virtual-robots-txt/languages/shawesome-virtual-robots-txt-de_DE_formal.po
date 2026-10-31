@@ -1,9 +1,9 @@
-# German (formal) translation of shawesome Virtual Robots.txt.
+# German (formal) translation of shawesome Virtual robots.txt.
 # Copyright (C) shawesome
 # This file is distributed under the same license as the plugin (GPL-2.0-or-later).
 msgid ""
 msgstr ""
-"Project-Id-Version: shawesome Virtual Robots.txt 1.5.0\n"
+"Project-Id-Version: shawesome Virtual robots.txt 1.5.0\n"
 "Report-Msgid-Bugs-To: https://github.com/shawesome-code/shawesome-virtual-robots.txt/issues\n"
 "Last-Translator: shawesome <hello@shawesome.de>\n"
 "Language-Team: German\n"
@@ -15,15 +15,15 @@ msgstr ""
 "X-Domain: shawesome-virtual-robots-txt\n"
 
 #. Plugin Name of the plugin
-msgid "shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite"
-msgstr "shawesome Virtual Robots.txt – eigene robots.txt pro Website im Multisite-Netzwerk"
+msgid "shawesome Virtual robots.txt – Per-Site robots.txt for Multisite"
+msgstr "shawesome Virtual robots.txt – eigene robots.txt pro Website im Multisite-Netzwerk"
 
 #. Description of the plugin
 msgid "An individual robots.txt for every site of a subdomain/domain-based multisite network – edited in the network admin, or deployed as a file to /wp-content/virtual-robots-txt/ (e.g. www.example.com → www-example-com.txt), which takes precedence."
 msgstr "Eine eigene robots.txt für jede Website eines Subdomain-/Domain-basierten Multisite-Netzwerks – bearbeitet in der Netzwerkverwaltung oder als Datei in /wp-content/virtual-robots-txt/ bereitgestellt (z. B. www.example.com → www-example-com.txt), die dann Vorrang hat."
 
-msgid "Virtual Robots.txt"
-msgstr "Virtual Robots.txt"
+msgid "Virtual robots.txt"
+msgstr "Virtual robots.txt"
 
 msgid "Settings"
 msgstr "Einstellungen"

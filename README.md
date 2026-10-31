@@ -1,6 +1,6 @@
-![shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite](.wordpress-org/banner-1544x500.png)
+![shawesome Virtual robots.txt – Per-Site robots.txt for Multisite](.wordpress-org/banner-1544x500.png)
 
-# shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite
+# shawesome Virtual robots.txt – Per-Site robots.txt for Multisite
 
 An individual robots.txt for every site of a domain-based WordPress multisite network – edited in the network admin or deployed as a file.
 
@@ -11,7 +11,7 @@ By [shawesome](https://shawesome.de/) · Open source under the [GNU General Publ
 Each site gets its own robots.txt, resolved in this order:
 
 1. **File** – a plain text file in `wp-content/virtual-robots-txt/`, named after the domain (dots become hyphens). Useful for Git-based deployments.
-2. **Database** – content edited under *Network Admin → shawesome → Virtual Robots.txt* or, if enabled, by site administrators in the site's admin, stored per site (survives domain changes, removed with the site).
+2. **Database** – content edited under *Network Admin → shawesome → Virtual robots.txt* or, if enabled, by site administrators in the site's admin, stored per site (survives domain changes, removed with the site).
 3. **WordPress default** – if neither exists.
 
 | Domain             | Override file           |
