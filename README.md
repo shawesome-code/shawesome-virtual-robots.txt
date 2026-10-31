@@ -1,17 +1,17 @@
-![Shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite](.wordpress-org/banner-1544x500.png)
+![shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite](.wordpress-org/banner-1544x500.png)
 
-# Shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite
+# shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite
 
 An individual robots.txt for every site of a domain-based WordPress multisite network – edited in the network admin or deployed as a file.
 
-By [Shawesome](https://shawesome.de/) · Open source under the [GNU General Public License v2 or later](LICENSE).
+By [shawesome](https://shawesome.de/) · Open source under the [GNU General Public License v2 or later](LICENSE).
 
 ## How it works
 
 Each site gets its own robots.txt, resolved in this order:
 
 1. **File** – a plain text file in `wp-content/virtual-robots-txt/`, named after the domain (dots become hyphens). Useful for Git-based deployments.
-2. **Database** – content edited under *Network Admin → Settings → Virtual Robots.txt*, stored per site (survives domain changes, removed with the site).
+2. **Database** – content edited under *Network Admin → shawesome → Virtual Robots.txt* or, if enabled, by site administrators in the site's admin, stored per site (survives domain changes, removed with the site).
 3. **WordPress default** – if neither exists.
 
 | Domain             | Override file           |
@@ -24,6 +24,7 @@ The domain with dots (`www.example.com.txt`) is accepted as an unambiguous alter
 - Only active on subdomain/domain-based multisite
 - Requires that no physical `robots.txt` exists in the web root
 - Sites set to "Discourage search engines" keep `Disallow: /` (can be switched off)
+- Site administrators can edit the robots.txt of their site with the same rights as super admins, if enabled (off by default)
 
 ## Yoast SEO and All in One SEO
 
@@ -40,6 +41,7 @@ The same page lists all sites with the source of their robots.txt, the override 
 - Filter `shawesome_vrt_candidate_files` – candidate file paths per domain
 - Filter `shawesome_vrt_priority` – priority of the `robots_txt` filter
 - Site option `shawesome_vrt_content` – stored content (not autoloaded)
+- Admin menu `shawesome` with its start page – shared by all shawesome plugins, see [shawesome-wordpress-admin](https://github.com/shawesome-code/shawesome-wordpress-admin)
 
 ## Requirements
 
@@ -54,11 +56,11 @@ Copy the folder `shawesome-virtual-robots-txt/` to `wp-content/plugins/` (or upl
 
 ## Repository layout
 
-- `shawesome-virtual-robots-txt/` – the plugin (translations in `languages/`)
+- `shawesome-virtual-robots-txt/` – the plugin (translations in `languages/`, shared admin code as a git subtree in `includes/shawesome-wordpress-admin/`)
 - `.wordpress-org/` – plugin directory assets (banners, icons)
 
 ## License
 
-Copyright © Shawesome.
+Copyright © shawesome.
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version. See [LICENSE](LICENSE).

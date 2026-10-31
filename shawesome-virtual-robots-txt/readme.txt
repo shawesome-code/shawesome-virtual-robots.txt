@@ -1,10 +1,10 @@
-=== Shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite ===
+=== shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite ===
 Contributors: shawesome
 Tags: robots.txt, multisite, seo, network, crawler
 Requires at least: 7.1
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Network: true
@@ -15,11 +15,15 @@ An individual robots.txt for every site of a domain-based multisite network – 
 
 WordPress generates one virtual robots.txt for every site. In a multisite network you often need different rules per domain – e.g. to block a staging domain or to point each site to its own sitemap.
 
-Shawesome Virtual Robots.txt lets you maintain a separate robots.txt for every site of the network:
+shawesome Virtual Robots.txt lets you maintain a separate robots.txt for every site of the network:
 
 **Edit in the network admin**
 
-Under *Network Admin → Settings → Virtual Robots.txt* every site has its own editor. The content is stored in the site's database options – it survives domain changes and is removed together with the site. Leave it empty to keep WordPress' default robots.txt.
+Under *Network Admin → shawesome → Virtual Robots.txt* every site has its own editor. The content is stored in the site's database options – it survives domain changes and is removed together with the site. Leave it empty to keep WordPress' default robots.txt.
+
+**Let site administrators edit**
+
+If enabled in the settings, site administrators can edit the robots.txt of their site under *shawesome → Virtual Robots.txt* in the site's admin. In the editor they have the same rights as super admins, so whoever saves last wins. They do not see other sites or the network settings. Off by default.
 
 **Or deploy a file**
 
@@ -45,6 +49,10 @@ The settings page lists all sites with the source of their robots.txt (database,
 
 Sites set to "Discourage search engines from indexing this site" keep WordPress' `Disallow: /` instead of the custom robots.txt, so a staging site does not become indexable by accident – even if the database was copied from production. This can be switched off.
 
+**The shawesome menu**
+
+All shawesome plugins share the *shawesome* menu. Its start page lists the active shawesome plugins and recommends others from the WordPress plugin directory, which WordPress queries for users who can install plugins.
+
 **Notes**
 
 * Only active on subdomain/domain-based multisite installations. Single sites and path-based networks are left untouched.
@@ -57,20 +65,21 @@ Sites set to "Discourage search engines from indexing this site" keep WordPress'
 * Filter `shawesome_vrt_candidate_files` – change the candidate file paths for a domain.
 * Filter `shawesome_vrt_priority` – change the priority of the `robots_txt` filter.
 * Content is stored in the site option `shawesome_vrt_content` (not autoloaded).
-* All callbacks are named functions and can be removed with `remove_filter()`.
+* All callbacks are named functions and can be removed with `remove_action()` / `remove_filter()`.
+* The admin menu `shawesome` and its start page are shared code in `includes/shawesome-wordpress-admin/`.
 
 == Installation ==
 
 1. Upload the folder `shawesome-virtual-robots-txt` to `/wp-content/plugins/` (or upload the ZIP via *Network Admin → Plugins → Add New*).
 2. Network-activate the plugin.
-3. Edit the robots.txt of each site under *Network Admin → Settings → Virtual Robots.txt* – or place one text file per domain in `/wp-content/virtual-robots-txt/`, e.g. `www-example-com.txt`.
+3. Edit the robots.txt of each site under *Network Admin → shawesome → Virtual Robots.txt* – or place one text file per domain in `/wp-content/virtual-robots-txt/`, e.g. `www-example-com.txt`.
 4. Check the result with the "Open" link or at `https://www.example.com/robots.txt`.
 
 == Frequently Asked Questions ==
 
 = My robots.txt is not delivered. =
 
-The overview under *Network Admin → Settings → Virtual Robots.txt* shows the source for every site. Also check that there is no physical `robots.txt` in the web root and that the site is not set to "Discourage search engines". For files, check that they are readable by the web server.
+The overview under *Network Admin → shawesome → Virtual Robots.txt* shows the source for every site. Also check that there is no physical `robots.txt` in the web root and that the site is not set to "Discourage search engines". For files, check that they are readable by the web server.
 
 = I changed the content in the editor, but the old one is still delivered. =
 
@@ -93,6 +102,12 @@ No. robots.txt is always served from the root of a host, so per-site robots.txt 
 The settings and the content stored in the database are deleted. Files in `/wp-content/virtual-robots-txt/` are kept.
 
 == Changelog ==
+
+= 1.5.0 =
+* New: the *shawesome* menu in the network admin, shared by all shawesome plugins, with a start page listing the active shawesome plugins and recommendations from the WordPress plugin directory. The settings page moved there from *Network Admin → Settings*.
+* New: optionally, site administrators can edit the robots.txt of their site in the site's admin.
+* Network admin actions check permissions before anything else.
+* The plugin name, the author and the menu are now written in lowercase, like the wordmark.
 
 = 1.4.0 =
 * "Base" is now the default mode. Networks that already saved their settings keep their mode.

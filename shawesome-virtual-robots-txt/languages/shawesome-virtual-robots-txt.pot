@@ -1,9 +1,9 @@
-# Translation template for Shawesome Virtual Robots.txt.
-# Copyright (C) Shawesome
+# Translation template for shawesome Virtual Robots.txt.
+# Copyright (C) shawesome
 # This file is distributed under the same license as the plugin (GPL-2.0-or-later).
 msgid ""
 msgstr ""
-"Project-Id-Version: Shawesome Virtual Robots.txt 1.4.0\n"
+"Project-Id-Version: shawesome Virtual Robots.txt 1.5.0\n"
 "Report-Msgid-Bugs-To: https://github.com/shawesome-code/shawesome-virtual-robots.txt/issues\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -11,7 +11,7 @@ msgstr ""
 "X-Domain: shawesome-virtual-robots-txt\n"
 
 #. Plugin Name of the plugin
-msgid "Shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite"
+msgid "shawesome Virtual Robots.txt – Per-Site robots.txt for Multisite"
 msgstr ""
 
 #. Description of the plugin
@@ -25,6 +25,9 @@ msgid "Settings"
 msgstr ""
 
 msgid "Sorry, you are not allowed to manage options for this network."
+msgstr ""
+
+msgid "Sorry, you are not allowed to edit the robots.txt of this site."
 msgstr ""
 
 msgid "Site not found."
@@ -97,6 +100,12 @@ msgid "Search engine visibility"
 msgstr ""
 
 msgid "Ignore the custom robots.txt on sites set to \"Discourage search engines from indexing this site\" (WordPress keeps \"Disallow: /\")."
+msgstr ""
+
+msgid "Site administrators"
+msgstr ""
+
+msgid "Let site administrators edit the robots.txt of their site in the site's admin, with the same rights as super admins."
 msgstr ""
 
 msgid "Sites"

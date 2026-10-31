@@ -1,7 +1,8 @@
 <?php
 /**
  * Network admin: settings, overview of all sites, per-site editor and
- * SEO plugin detection.
+ * SEO plugin detection. Site admin: the same editor for the current site, if
+ * enabled in the settings.
  *
  * @package Shawesome_Virtual_Robots_Txt
  */
@@ -10,6 +11,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+require_once __DIR__ . '/shawesome-wordpress-admin/loader.php';
 
 /**
  * Load the bundled translations. Translations from translate.wordpress.org
@@ -55,21 +58,35 @@ function shawesome_vrt_active_seo_plugins( $site_id ) {
 }
 
 /**
- * URL of the settings page, optionally for one site's editor.
+ * URL of the settings page in the current admin, optionally for one site's
+ * editor.
  *
  * @param array $args Query arguments.
  * @return string
  */
 function shawesome_vrt_page_url( $args = array() ) {
-	return add_query_arg( $args, network_admin_url( 'settings.php?page=shawesome-vrt' ) );
+	return add_query_arg( $args, is_network_admin() ? network_admin_url( 'admin.php?page=shawesome-vrt' ) : admin_url( 'admin.php?page=shawesome-vrt' ) );
 }
 
 /**
- * Add the settings page under Network Admin → Settings.
+ * URL the editor posts an action to: network/edit.php in the network admin,
+ * admin-post.php in the admin of a site.
+ *
+ * @param string $action Action without the prefix.
+ * @return string
+ */
+function shawesome_vrt_action_url( $action ) {
+	$action = 'shawesome_vrt_' . $action;
+
+	return is_network_admin() ? network_admin_url( 'edit.php?action=' . $action ) : admin_url( 'admin-post.php?action=' . $action );
+}
+
+/**
+ * Add the settings page under Network Admin → shawesome.
  */
 function shawesome_vrt_admin_menu() {
 	add_submenu_page(
-		'settings.php',
+		'shawesome',
 		__( 'Virtual Robots.txt', 'shawesome-virtual-robots-txt' ),
 		__( 'Virtual Robots.txt', 'shawesome-virtual-robots-txt' ),
 		'manage_network_options',
@@ -78,6 +95,38 @@ function shawesome_vrt_admin_menu() {
 	);
 }
 add_action( 'network_admin_menu', 'shawesome_vrt_admin_menu' );
+
+/**
+ * Add the editor of the current site under shawesome in the site's admin.
+ */
+function shawesome_vrt_site_admin_menu() {
+	if ( ! shawesome_vrt_can_edit_site() ) {
+		return;
+	}
+
+	add_submenu_page(
+		'shawesome',
+		__( 'Virtual Robots.txt', 'shawesome-virtual-robots-txt' ),
+		__( 'Virtual Robots.txt', 'shawesome-virtual-robots-txt' ),
+		'manage_options',
+		'shawesome-vrt',
+		'shawesome_vrt_render_site_page'
+	);
+}
+add_action( 'admin_menu', 'shawesome_vrt_site_admin_menu' );
+
+/**
+ * Link the plugin on the start page of the shawesome menu to the settings page.
+ *
+ * @param array<string, string> $pages Plugin file => menu slug.
+ * @return array<string, string>
+ */
+function shawesome_vrt_admin_pages( $pages ) {
+	$pages[ plugin_basename( dirname( __DIR__ ) . '/shawesome-virtual-robots-txt.php' ) ] = 'shawesome-vrt';
+
+	return $pages;
+}
+add_filter( 'shawesome_admin_pages', 'shawesome_vrt_admin_pages' );
 
 /**
  * Add a "Settings" link to the plugin row in Network Admin → Plugins.
@@ -102,11 +151,40 @@ function shawesome_vrt_check_cap() {
 }
 
 /**
- * Site posted to a per-site action, die if it does not exist.
+ * Whether the current user can edit the robots.txt of the current site in its
+ * admin. Not on path-based networks, where the plugin does nothing.
+ *
+ * @return bool
+ */
+function shawesome_vrt_can_edit_site() {
+	$settings = shawesome_vrt_get_settings();
+
+	return shawesome_vrt_is_supported() && $settings['site_admins'] && current_user_can( 'manage_options' );
+}
+
+/**
+ * Check capability for a per-site action, die otherwise.
+ */
+function shawesome_vrt_check_site_cap() {
+	if ( is_network_admin() ) {
+		shawesome_vrt_check_cap();
+	} elseif ( ! shawesome_vrt_can_edit_site() ) {
+		wp_die( esc_html__( 'Sorry, you are not allowed to edit the robots.txt of this site.', 'shawesome-virtual-robots-txt' ) );
+	}
+}
+
+/**
+ * Site of a per-site action: the current site in the admin of a site, so
+ * that its administrators cannot reach other sites, otherwise the posted
+ * site. Dies if it does not exist.
  *
  * @return WP_Site
  */
 function shawesome_vrt_posted_site() {
+	if ( ! is_network_admin() ) {
+		return get_site();
+	}
+
 	// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified by the caller.
 	$site = isset( $_POST['site_id'] ) ? get_site( absint( $_POST['site_id'] ) ) : null;
 
@@ -121,8 +199,8 @@ function shawesome_vrt_posted_site() {
  * Save the settings (posted to network/edit.php?action=shawesome_vrt_save).
  */
 function shawesome_vrt_save_settings() {
-	check_admin_referer( 'shawesome_vrt_save' );
 	shawesome_vrt_check_cap();
+	check_admin_referer( 'shawesome_vrt_save' );
 
 	$mode = isset( $_POST['mode'] ) ? sanitize_key( wp_unslash( $_POST['mode'] ) ) : 'base';
 
@@ -131,6 +209,7 @@ function shawesome_vrt_save_settings() {
 		array(
 			'mode'           => in_array( $mode, array( 'exact', 'base' ), true ) ? $mode : 'base',
 			'respect_public' => ! empty( $_POST['respect_public'] ),
+			'site_admins'    => ! empty( $_POST['site_admins'] ),
 		)
 	);
 
@@ -140,12 +219,13 @@ function shawesome_vrt_save_settings() {
 add_action( 'network_admin_edit_shawesome_vrt_save', 'shawesome_vrt_save_settings' );
 
 /**
- * Save a site's robots.txt content (posted to network/edit.php?action=shawesome_vrt_save_site).
+ * Save a site's robots.txt content (posted to network/edit.php or
+ * admin-post.php?action=shawesome_vrt_save_site).
  */
 function shawesome_vrt_save_site() {
+	shawesome_vrt_check_site_cap();
 	$site = shawesome_vrt_posted_site();
 	check_admin_referer( 'shawesome_vrt_save_site_' . $site->blog_id );
-	shawesome_vrt_check_cap();
 
 	// robots.txt is served as text/plain and may contain characters such as
 	// "%" or "*" that sanitize_textarea_field() would alter, so only invalid
@@ -166,14 +246,16 @@ function shawesome_vrt_save_site() {
 	exit;
 }
 add_action( 'network_admin_edit_shawesome_vrt_save_site', 'shawesome_vrt_save_site' );
+add_action( 'admin_post_shawesome_vrt_save_site', 'shawesome_vrt_save_site' );
 
 /**
- * Copy a site's file into the database (posted to network/edit.php?action=shawesome_vrt_import).
+ * Copy a site's file into the database (posted to network/edit.php or
+ * admin-post.php?action=shawesome_vrt_import).
  */
 function shawesome_vrt_import_file() {
+	shawesome_vrt_check_site_cap();
 	$site = shawesome_vrt_posted_site();
 	check_admin_referer( 'shawesome_vrt_import_' . $site->blog_id );
-	shawesome_vrt_check_cap();
 
 	$file    = shawesome_vrt_find_file( $site->domain );
 	$content = null === $file ? null : shawesome_vrt_read_file( $file );
@@ -193,6 +275,21 @@ function shawesome_vrt_import_file() {
 	exit;
 }
 add_action( 'network_admin_edit_shawesome_vrt_import', 'shawesome_vrt_import_file' );
+add_action( 'admin_post_shawesome_vrt_import', 'shawesome_vrt_import_file' );
+
+/**
+ * Render the editor of the current site in its admin.
+ */
+function shawesome_vrt_render_site_page() {
+	if ( ! shawesome_vrt_can_edit_site() ) {
+		return;
+	}
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display only.
+	$updated = isset( $_GET['updated'] ) ? sanitize_key( wp_unslash( $_GET['updated'] ) ) : '';
+
+	shawesome_vrt_render_editor( get_site(), $updated );
+}
 
 /**
  * Render the settings page or, with ?site=ID, the editor of one site.
@@ -225,7 +322,9 @@ function shawesome_vrt_notice( $message, $type = 'success' ) {
 }
 
 /**
- * Render the editor of one site.
+ * Render the editor of one site, in the network admin or the site's admin.
+ * Site administrators can do the same as super admins here, but do not see
+ * the path of the file on the server.
  *
  * @param WP_Site $site    Site.
  * @param string  $updated Result of the last action.
@@ -234,6 +333,7 @@ function shawesome_vrt_render_editor( $site, $updated ) {
 	$resolved   = shawesome_vrt_resolve( $site );
 	$db_content = shawesome_vrt_get_db_content( (int) $site->blog_id );
 	$has_file   = 'file' === $resolved['source'];
+	$network    = is_network_admin();
 	?>
 	<div class="wrap">
 		<h1>
@@ -242,7 +342,9 @@ function shawesome_vrt_render_editor( $site, $updated ) {
 			printf( esc_html__( 'robots.txt for %s', 'shawesome-virtual-robots-txt' ), esc_html( $site->domain ) );
 			?>
 		</h1>
-		<p><a href="<?php echo esc_url( shawesome_vrt_page_url() ); ?>">&larr; <?php esc_html_e( 'All sites', 'shawesome-virtual-robots-txt' ); ?></a></p>
+		<?php if ( $network ) : ?>
+			<p><a href="<?php echo esc_url( shawesome_vrt_page_url() ); ?>">&larr; <?php esc_html_e( 'All sites', 'shawesome-virtual-robots-txt' ); ?></a></p>
+		<?php endif; ?>
 
 		<?php
 		if ( 'site' === $updated ) {
@@ -260,7 +362,7 @@ function shawesome_vrt_render_editor( $site, $updated ) {
 				printf(
 					/* translators: %s: file path */
 					esc_html__( 'This site is overridden by the file %s. The file is delivered; the database content below is only used once the file is removed.', 'shawesome-virtual-robots-txt' ),
-					'<code>' . esc_html( $resolved['file'] ) . '</code>'
+					'<code>' . esc_html( $network ? $resolved['file'] : basename( $resolved['file'] ) ) . '</code>'
 				);
 				?>
 			</p></div>
@@ -268,7 +370,7 @@ function shawesome_vrt_render_editor( $site, $updated ) {
 			<h2><?php esc_html_e( 'File content (read-only)', 'shawesome-virtual-robots-txt' ); ?></h2>
 			<textarea class="large-text code" rows="12" readonly><?php echo esc_textarea( $resolved['content'] ); ?></textarea>
 
-			<form method="post" action="<?php echo esc_url( network_admin_url( 'edit.php?action=shawesome_vrt_import' ) ); ?>">
+			<form method="post" action="<?php echo esc_url( shawesome_vrt_action_url( 'import' ) ); ?>">
 				<?php wp_nonce_field( 'shawesome_vrt_import_' . $site->blog_id ); ?>
 				<input type="hidden" name="site_id" value="<?php echo esc_attr( $site->blog_id ); ?>">
 				<?php submit_button( __( 'Copy file into database', 'shawesome-virtual-robots-txt' ), 'secondary', 'submit', false ); ?>
@@ -276,7 +378,7 @@ function shawesome_vrt_render_editor( $site, $updated ) {
 		<?php endif; ?>
 
 		<h2><?php esc_html_e( 'Database content', 'shawesome-virtual-robots-txt' ); ?></h2>
-		<form method="post" action="<?php echo esc_url( network_admin_url( 'edit.php?action=shawesome_vrt_save_site' ) ); ?>">
+		<form method="post" action="<?php echo esc_url( shawesome_vrt_action_url( 'save_site' ) ); ?>">
 			<?php wp_nonce_field( 'shawesome_vrt_save_site_' . $site->blog_id ); ?>
 			<input type="hidden" name="site_id" value="<?php echo esc_attr( $site->blog_id ); ?>">
 			<textarea name="content" class="large-text code" rows="16" placeholder="User-agent: *&#10;Disallow: /wp-admin/&#10;Allow: /wp-admin/admin-ajax.php&#10;&#10;Sitemap: <?php echo esc_attr( get_home_url( $site->blog_id, 'wp-sitemap.xml' ) ); ?>"><?php echo esc_textarea( $db_content ); ?></textarea>
@@ -364,6 +466,15 @@ function shawesome_vrt_render_overview( $updated ) {
 						<label>
 							<input type="checkbox" name="respect_public" value="1" <?php checked( $settings['respect_public'] ); ?>>
 							<?php esc_html_e( 'Ignore the custom robots.txt on sites set to "Discourage search engines from indexing this site" (WordPress keeps "Disallow: /").', 'shawesome-virtual-robots-txt' ); ?>
+						</label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Site administrators', 'shawesome-virtual-robots-txt' ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox" name="site_admins" value="1" <?php checked( $settings['site_admins'] ); ?>>
+							<?php esc_html_e( 'Let site administrators edit the robots.txt of their site in the site\'s admin, with the same rights as super admins.', 'shawesome-virtual-robots-txt' ); ?>
 						</label>
 					</td>
 				</tr>
