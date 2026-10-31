@@ -53,6 +53,9 @@ msgstr "Fichier copié dans la base de données. Supprimez le fichier pour que l
 msgid "The file could not be read."
 msgstr "Le fichier n’a pas pu être lu."
 
+msgid "This site is hidden from search engines, so the custom robots.txt is ignored and WordPress delivers its default robots.txt."
+msgstr "Ce site est masqué pour les moteurs de recherche : le robots.txt personnalisé est donc ignoré et WordPress sert son robots.txt par défaut."
+
 #. translators: %s: file path
 msgid "This site is overridden by the file %s. The file is delivered; the database content below is only used once the file is removed."
 msgstr "Ce site est remplacé par le fichier %s. C’est le fichier qui est servi ; le contenu de la base de données ci-dessous ne sera utilisé qu’une fois le fichier supprimé."
@@ -103,8 +106,8 @@ msgstr "le contenu est servi tel quel. Les extensions SEO (Yoast SEO, All in One
 msgid "Search engine visibility"
 msgstr "Visibilité pour les moteurs de recherche"
 
-msgid "Ignore the custom robots.txt on sites set to \"Discourage search engines from indexing this site\" (WordPress keeps \"Disallow: /\")."
-msgstr "Ignorer le robots.txt personnalisé sur les sites réglés sur « Demander aux moteurs de recherche de ne pas indexer ce site » (WordPress conserve « Disallow: / »)."
+msgid "Ignore the custom robots.txt on sites set to \"Discourage search engines from indexing this site\" (WordPress delivers its default robots.txt)."
+msgstr "Ignorer le robots.txt personnalisé sur les sites réglés sur « Demander aux moteurs de recherche de ne pas indexer ce site » (WordPress sert son robots.txt par défaut)."
 
 msgid "Site administrators"
 msgstr "Administrateurs de site"

@@ -49,6 +49,9 @@ msgstr ""
 msgid "The file could not be read."
 msgstr ""
 
+msgid "This site is hidden from search engines, so the custom robots.txt is ignored and WordPress delivers its default robots.txt."
+msgstr ""
+
 #. translators: %s: file path
 msgid "This site is overridden by the file %s. The file is delivered; the database content below is only used once the file is removed."
 msgstr ""
@@ -99,7 +102,7 @@ msgstr ""
 msgid "Search engine visibility"
 msgstr ""
 
-msgid "Ignore the custom robots.txt on sites set to \"Discourage search engines from indexing this site\" (WordPress keeps \"Disallow: /\")."
+msgid "Ignore the custom robots.txt on sites set to \"Discourage search engines from indexing this site\" (WordPress delivers its default robots.txt)."
 msgstr ""
 
 msgid "Site administrators"

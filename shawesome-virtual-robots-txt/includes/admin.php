@@ -333,6 +333,8 @@ function shawesome_vrt_render_editor( $site, $updated ) {
 	$resolved   = shawesome_vrt_resolve( $site );
 	$db_content = shawesome_vrt_get_db_content( (int) $site->blog_id );
 	$has_file   = 'file' === $resolved['source'];
+	$settings   = shawesome_vrt_get_settings();
+	$is_public  = '0' !== (string) get_blog_option( $site->blog_id, 'blog_public' );
 	$network    = is_network_admin();
 	?>
 	<div class="wrap">
@@ -355,6 +357,10 @@ function shawesome_vrt_render_editor( $site, $updated ) {
 			shawesome_vrt_notice( __( 'The file could not be read.', 'shawesome-virtual-robots-txt' ), 'error' );
 		}
 		?>
+
+		<?php if ( $settings['respect_public'] && ! $is_public ) : ?>
+			<div class="notice notice-warning inline"><p><?php esc_html_e( 'This site is hidden from search engines, so the custom robots.txt is ignored and WordPress delivers its default robots.txt.', 'shawesome-virtual-robots-txt' ); ?></p></div>
+		<?php endif; ?>
 
 		<?php if ( $has_file ) : ?>
 			<div class="notice notice-info inline"><p>
@@ -465,7 +471,7 @@ function shawesome_vrt_render_overview( $updated ) {
 					<td>
 						<label>
 							<input type="checkbox" name="respect_public" value="1" <?php checked( $settings['respect_public'] ); ?>>
-							<?php esc_html_e( 'Ignore the custom robots.txt on sites set to "Discourage search engines from indexing this site" (WordPress keeps "Disallow: /").', 'shawesome-virtual-robots-txt' ); ?>
+							<?php esc_html_e( 'Ignore the custom robots.txt on sites set to "Discourage search engines from indexing this site" (WordPress delivers its default robots.txt).', 'shawesome-virtual-robots-txt' ); ?>
 						</label>
 					</td>
 				</tr>

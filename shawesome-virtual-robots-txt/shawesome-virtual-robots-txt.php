@@ -57,8 +57,8 @@ function shawesome_vrt_is_supported() {
  *   plugins may still add their rules and sitemaps.
  * - mode 'exact': the file is delivered as is, after all SEO plugins
  *   (Yoast SEO, All in One SEO …) have run.
- * - respect_public: sites set to "Discourage search engines" keep
- *   WordPress' "Disallow: /" instead of the file.
+ * - respect_public: sites set to "Discourage search engines" keep the
+ *   WordPress default instead of the file.
  * - site_admins: site administrators can edit the robots.txt of their site
  *   in its admin.
  *
@@ -244,7 +244,7 @@ function shawesome_vrt_dedupe_sitemaps( $output ) {
  * file or database content.
  *
  * @param string $output robots.txt output so far.
- * @param string $public Value of the blog_public option ('0' = discourage search engines).
+ * @param bool   $public Whether the site is public (false = discourage search engines).
  * @return string
  */
 function shawesome_vrt_filter_robots_txt( $output, $public ) {
@@ -254,9 +254,9 @@ function shawesome_vrt_filter_robots_txt( $output, $public ) {
 
 	$settings = shawesome_vrt_get_settings();
 
-	// Keep WordPress' "Disallow: /" for sites hidden from search engines,
-	// so that e.g. a staging site does not become indexable by accident.
-	if ( $settings['respect_public'] && '0' === (string) $public ) {
+	// Keep the WordPress default for sites hidden from search engines, so
+	// that e.g. a staging site does not deliver the rules of production.
+	if ( $settings['respect_public'] && ! $public ) {
 		return $output;
 	}
 

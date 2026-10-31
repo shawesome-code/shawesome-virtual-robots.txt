@@ -23,7 +23,7 @@ The domain with dots (`www.example.com.txt`) is accepted as an unambiguous alter
 
 - Only active on subdomain/domain-based multisite
 - Requires that no physical `robots.txt` exists in the web root
-- Sites set to "Discourage search engines" keep `Disallow: /` (can be switched off)
+- Sites set to "Discourage search engines" keep the WordPress default robots.txt (can be switched off)
 - Site administrators can edit the robots.txt of their site with the same rights as super admins, if enabled (off by default)
 
 ## Yoast SEO and All in One SEO

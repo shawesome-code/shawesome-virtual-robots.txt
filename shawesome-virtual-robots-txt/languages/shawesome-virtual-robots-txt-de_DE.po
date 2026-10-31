@@ -53,6 +53,9 @@ msgstr "Datei in die Datenbank kopiert. Lösche die Datei, damit der Inhalt aus 
 msgid "The file could not be read."
 msgstr "Die Datei konnte nicht gelesen werden."
 
+msgid "This site is hidden from search engines, so the custom robots.txt is ignored and WordPress delivers its default robots.txt."
+msgstr "Diese Website ist für Suchmaschinen verborgen, daher wird die eigene robots.txt ignoriert und WordPress liefert seine Standard-robots.txt aus."
+
 #. translators: %s: file path
 msgid "This site is overridden by the file %s. The file is delivered; the database content below is only used once the file is removed."
 msgstr "Diese Website wird durch die Datei %s überschrieben. Ausgeliefert wird die Datei; der Datenbank-Inhalt unten wird erst verwendet, wenn die Datei entfernt ist."
@@ -103,8 +106,8 @@ msgstr "der Inhalt wird unverändert ausgeliefert. SEO-Plugins (Yoast SEO, All i
 msgid "Search engine visibility"
 msgstr "Sichtbarkeit für Suchmaschinen"
 
-msgid "Ignore the custom robots.txt on sites set to \"Discourage search engines from indexing this site\" (WordPress keeps \"Disallow: /\")."
-msgstr "Eigene robots.txt auf Websites ignorieren, bei denen „Suchmaschinen davon abhalten, diese Website zu indexieren“ aktiviert ist (WordPress behält „Disallow: /“)."
+msgid "Ignore the custom robots.txt on sites set to \"Discourage search engines from indexing this site\" (WordPress delivers its default robots.txt)."
+msgstr "Eigene robots.txt auf Websites ignorieren, bei denen „Suchmaschinen davon abhalten, diese Website zu indexieren“ aktiviert ist (WordPress liefert seine Standard-robots.txt aus)."
 
 msgid "Site administrators"
 msgstr "Website-Administratoren"

@@ -47,7 +47,7 @@ The settings page lists all sites with the source of their robots.txt (database,
 
 **Search engine visibility**
 
-Sites set to "Discourage search engines from indexing this site" keep WordPress' `Disallow: /` instead of the custom robots.txt, so a staging site does not become indexable by accident – even if the database was copied from production. This can be switched off.
+Sites set to "Discourage search engines from indexing this site" keep WordPress' default robots.txt instead of the custom one, so a staging site does not deliver the rules and sitemaps of production by accident – even if the database was copied from production. WordPress itself keeps these sites out of search results with a `noindex` tag. This can be switched off.
 
 **The shawesome menu**
 
@@ -106,6 +106,8 @@ The settings and the content stored in the database are deleted. Files in `/wp-c
 = 1.5.0 =
 * New: the *shawesome* menu in the network admin, shared by all shawesome plugins, with a start page listing the active shawesome plugins and recommendations from the WordPress plugin directory. The settings page moved there from *Network Admin → Settings*.
 * New: optionally, site administrators can edit the robots.txt of their site in the site's admin.
+* The editor warns when a site is hidden from search engines and its custom robots.txt is therefore ignored.
+* Fix: sites set to "Discourage search engines" now really keep the WordPress default instead of the custom robots.txt. The setting had no effect since 1.2.0. WordPress no longer adds "Disallow: /" to its default, so that text was corrected as well.
 * Network admin actions check permissions before anything else.
 * The plugin name, the author and the menu are now written in lowercase, like the wordmark.
 
